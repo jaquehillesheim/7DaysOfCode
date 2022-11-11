@@ -12,6 +12,16 @@ import SDWebImage
 
 class MovieViewController: UIViewController {
     
+    private var requstNetwoeking = Network()
+    private var movies: [Movie] = [] {
+        didSet {
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        }
+    }
+    
+    
     private lazy var tituloLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -27,17 +37,29 @@ class MovieViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = .clear
+        tableView.register(MovieTableViewCell.self, forCellReuseIdentifier: "movieCell")
+        tableView.separatorStyle = .none
         return tableView
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.setBackground()
         setupView()
+        getPopularMovies()
+    }
+    
+    private func getPopularMovies() {
+        requstNetwoeking.fetchPopularMovies { movies in
+            self.movies = movies
+            
+        }
     }
 }
 
 private extension MovieViewController {
     func setupView() {
+        navigationItem.backButtonTitle = "Voltar"
         view.addSubview(tituloLabel)
         view.addSubview(tableView)
         
@@ -63,13 +85,21 @@ private extension MovieViewController {
 extension MovieViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell()
-        cell.textLabel?.text = movies[indexPath.row].title
-        cel.backgroundColor = .clear
-        cell.textLabel?.textColor = .white
-        return cell
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "movieCell") as? MovieTableViewCell {
+            cell.selectionStyle = .none
+            cell.configureCell(movie: movies[indexPath.row])
+            return cell
+        }
+        return UITableViewCell()
     }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return movies.count
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let detailsVC = MovieDetailsViewController(movie: movies[indexPath.row])
+        navigationController?.pushViewController(detailsVC, animated: true)
     }
 }
