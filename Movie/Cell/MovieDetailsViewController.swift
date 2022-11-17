@@ -97,8 +97,6 @@ class MovieDetailsViewController: UIViewController {
             make.top.equalTo(userScoreLabel.snp.bottom).offset(32.0)
             make.leading.trailing.equalToSuperview().inset(16)
         }
-        
-        
     }
 }
 

@@ -52,7 +52,6 @@ class MovieViewController: UIViewController {
     private func getPopularMovies() {
         requstNetwoeking.fetchPopularMovies { movies in
             self.movies = movies
-            
         }
     }
 }
@@ -62,7 +61,6 @@ private extension MovieViewController {
         navigationItem.backButtonTitle = "Voltar"
         view.addSubview(tituloLabel)
         view.addSubview(tableView)
-        
         setupContraint()
     }
     
